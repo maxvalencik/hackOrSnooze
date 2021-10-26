@@ -2,10 +2,13 @@
 
 nav {
   display: flex;
-  background-color: #ff6600;
+  background-color: rgba(79, 79, 236, 0.836);
   align-items: center;
+  justify-content: center;
   padding: 5px 20px;
   border-radius: 3px 3px 0 0;
+  flex-direction: row;
+  color: white;
 }
 
 .navbar-brand {
@@ -17,7 +20,6 @@ nav {
   margin: 0 3px;
 }
 
-.nav-right {
-  margin-left: auto;
-  text-align: right;
+.nav-center {
+  margin: 0 25% 0 25%;
 }

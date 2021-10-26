@@ -50,3 +50,20 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+/** Function to submit the new story to the API and show it on the page */
+
+function submitStory(evt){
+  console.debug("submitStory");
+  evt.preventDefault();
+
+  //get story details from the form
+  const title = $titleInput.val();
+  const author = $authorInput.val();
+  const url = $urlInput.val();
+
+  const newStory =  await storyList.addStory(currentUser, {author, title, url});
+
+  // Create the markup for the new story and prepend to the html
+  $allStoriesList.prepend(generateStoryMarkup(newStory));
+}
