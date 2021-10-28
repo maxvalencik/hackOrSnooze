@@ -13,6 +13,7 @@ nav {
 
 .navbar-brand {
   font-weight: bold;
+  width: 33%;
 }
 
 .nav-link {
@@ -21,5 +22,11 @@ nav {
 }
 
 .nav-center {
-  margin: 0 25% 0 25%;
+  width: 33%;
+  text-align: center;
+}
+
+.nav-right {
+  width: 33%;
+  text-align: right;
 }

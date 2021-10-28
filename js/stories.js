@@ -20,11 +20,41 @@ async function getAndShowStoriesOnStart() {
  */
 
 function generateStoryMarkup(story) {
-  // console.debug("generateStoryMarkup", story);
+  console.debug("generateStoryMarkup", story);
+
+
+  let star = '';
+  let favStatus = ''; 
+  let trashCan = '';
+  
+  //Check if story is a currentUser favorite to load the stars accordingly
+  if (currentUser){
+    star = '&star;';
+    favStatus = 'notFav';
+
+    for (let s of currentUser.favorites){
+      if (s.storyId === story.storyId){
+        star = '&starf;';
+        favStatus = 'fav';
+        break;
+      }
+    }
+
+    for (let s of currentUser.ownStories){
+      if (s.storyId === story.storyId){
+        trashCan = '&#128465';
+        break;
+      }
+    }
+  }
 
   const hostName = story.getHostName();
+
   return $(`
-      <li id="${story.storyId}">
+      
+      <li id="${story.storyId}"> 
+        <span class="star ${favStatus}">${star}</span>
+        <span class="trash-can">${trashCan}</span>
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -53,7 +83,7 @@ function putStoriesOnPage() {
 
 /** Function to submit the new story to the API and show it on the page */
 
-function submitStory(evt){
+async function submitStory(evt){
   console.debug("submitStory");
   evt.preventDefault();
 
@@ -66,4 +96,99 @@ function submitStory(evt){
 
   // Create the markup for the new story and prepend to the html
   $allStoriesList.prepend(generateStoryMarkup(newStory));
+  $submitForm.hide();
 }
+
+$submitButton.on("click", submitStory);
+
+
+/** Function that allows a logged in user to star or un-star a story (favorites on/off)*/
+
+async function makeRemoveFavorite(evt) {
+  console.debug("makeFavorite");
+  const $star = $(evt.target);
+
+  //find the story selected in the list of stories array
+  const clickedStory = $star.closest("li").attr("id");
+  const story = storyList.stories.find(elt => elt.storyId === clickedStory);
+
+  // check if fav or not and act accordingly
+  if ($star.hasClass("fav")) {
+    $star.removeClass("fav").addClass("notFav");
+    $star.html("&star;");
+    await currentUser.removeFav(story);
+    console.log(currentUser.favorites);
+    
+    //update favorite stories html list
+    listFavoriteStories();
+
+  } else {
+    $star.removeClass("notFav").addClass("fav");
+    $star.html("&starf;");
+    await currentUser.addFav(story);
+    console.log(currentUser.favorites);
+  }
+}
+
+$allStoriesList.on("click",'.star', makeRemoveFavorite);
+$favoriteStories.on("click",'.star', makeRemoveFavorite);
+
+
+/** Create list of favorite stories for user */
+
+function listFavoriteStories() {
+  console.debug("listFavoriteStories");
+
+  $favoriteStories.empty();
+
+  if (currentUser.favorites.length !== 0) {
+
+    for (let story of currentUser.favorites) {
+      $favoriteStories.append(generateStoryMarkup(story));
+    }
+  } else {
+    $favoriteStories.append("<h5>No favorites yet...</h5>");
+  }
+
+  $favoriteStories.show();
+}
+
+
+/** Create list of stories from user (my stories*/
+
+function listMyStories() {
+  console.debug("listMyStories");
+
+  $myStories.empty();
+
+  if (currentUser.ownStories.length !== 0) {
+
+    for (let story of currentUser.ownStories) {
+      $myStories.append(generateStoryMarkup(story));
+    }
+  } else {
+    $myStories.append("<h5>No stories yet...</h5>");
+  }
+
+  $myStories.show();
+}
+
+
+/** Delete a story by clicking on trash can */
+
+async function deleteStory(evt) {
+  console.debug("deleteStory");
+
+  const $trashCan = $(evt.target);
+  //find the story selected in the list of stories array
+  const clickedStory = $trashCan.closest("li").attr("id");
+  
+  await storyList.removeStory(clickedStory, currentUser);
+  // re-create story list
+  await putUserStoriesOnPage();
+}
+
+$myStories.on("click", ".trash-can", deleteStory);
+$allStoriesList.on("click",'.trash-can', deleteStory);
+$favoriteStories.on("click",'.trash-can', deleteStory);
+

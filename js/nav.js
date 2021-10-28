@@ -29,7 +29,7 @@ $navLogin.on("click", navLoginClick);
 
 function updateNavOnLogin() {
   console.debug("updateNavOnLogin");
-  $(".main-nav-links").show();
+  $(".nav-center").show();
   $navLogin.hide();
   $navLogOut.show();
   $navUserProfile.text(`${currentUser.username}`).show();
@@ -39,8 +39,70 @@ function updateNavOnLogin() {
 
 function navSubmitClick(evt) {
   console.debug("navSubmitClick", evt);
+
   hidePageComponents();
   $submitForm.show();
 }
 
 $navSubmit.on("click", navSubmitClick);
+
+
+/** Show list of favorites for currentUser when clicked on 'favorites' */
+
+function navFavoritesClick(evt) {
+  console.debug("navFavoritesClick", evt);
+
+  hidePageComponents();
+  listFavoriteStories();
+}
+
+$body.on("click", "#nav-favorites", navFavoritesClick);
+
+/** Show list of favorites for currentUser when clicked on 'favorites' */
+
+function navMyStoriesClick(evt) {
+  console.debug("navMyStoriesClick", evt);
+
+  hidePageComponents();
+  listMyStories();
+}
+
+$body.on("click", "#nav-my-stories", navMyStoriesClick);
+
+
+/** Create user profile page and update username */
+
+function userProfile(evt) {
+  console.debug("userProfile");
+
+  hidePageComponents();
+  $userProfile.show();
+
+  $("#name").val(currentUser.name);
+  $("#username").val(currentUser.username);
+  $("#date").text(currentUser.createdAt.slice(0, 10));
+}
+
+$body.on("click", '#nav-user-profile', userProfile);
+
+
+async function updateUsername(evt){
+  const newName = $("#name").val();
+  const newUser = $("#username").val();
+
+  //API update with PATCH request
+  await axios({
+      url: `${BASE_URL}/users/${currentUser.username}`,
+      method: "PATCH",
+      data: {token: currentUser.loginToken, user: {name: newName, username: newUser} },
+    });
+
+    //update local variables
+    currentUser.username = newUser;
+    currentUser.name = newName
+
+    saveUserCredentialsInLocalStorage();
+    updateUIOnUserLogin();
+}
+
+$body.on("click",'#user-button', updateUsername);

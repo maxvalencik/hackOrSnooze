@@ -9,7 +9,7 @@
      - Michael Hueter: initial creation, 2018
      - Elie Schoppik: refactoring using OO, 2019
      - Joel Burton: refactored and componentized, 2020
-     - You!
+     - Maxime Valencik
   -->
 
 <html lang="en">
@@ -34,8 +34,10 @@
     <div class="navbar-brand">
       <a class="nav-link" href="#" id="nav-all">Hack or Snooze</a>
     </div>
-    <div class="nav-center">
-      <a class="nav-link" href="#" id="nav-submit">Submit</a>
+    <div class="nav-center" hidden>
+      <a class="nav-link" href="#" id="nav-submit">Submit&nbsp;&nbsp;|</a>
+      <a class="nav-link" href="#" id="nav-favorites">Favorites&nbsp;&nbsp;|</a>
+      <a class="nav-link" href="#" id="nav-my-stories">My&nbsp;stories</a>
     </div>
     <div class="nav-right">
       <a class="nav-link" href="#" id="nav-login">login/signup</a>
@@ -73,6 +75,25 @@
     <!-- List of all stories -->
     <ol id="all-stories-list" class="stories-list"></ol>
 
+    <!-- List of favorite stories -->
+    <ol id="favorite-stories" class="stories-list hidden"></ol>
+
+    <!-- List of suser stories -->
+    <ol id="my-stories" class="stories-list hidden"></ol>
+
+  </section>
+
+  <!-- User profile -->
+  <section id="user-profile" class="hidden">
+    <div class="container">
+      <h4>User Profile Info</h4>
+      <section>
+        <div>name: <input type="text" id="name"></div>
+        <div>username: <input type="text" id="username"></div>
+        <div>account created: <span id="date"></span></div>
+        <button id="user-button">update account</button>
+      </section>
+    </div>
   </section>
 
   <!-- Login and signup forms -->

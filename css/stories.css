@@ -16,6 +16,25 @@
   margin: 20px 30px;
 }
 
+.star{
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.fav{
+  color: yellow;
+}
+
+.notFav{
+  color: grey;
+}
+
+.trash-can{
+  font-size: 80%;
+  cursor: pointer;
+}
+
+
 
 /* Individual stories */
 
@@ -37,3 +56,4 @@
 .story-user {
   display: block;
 }
+

@@ -80,11 +80,11 @@ class StoryList {
     const res = await axios({
       url: `${BASE_URL}/stories`,
       method: "POST",
-      data: {"token": user.loginToken, "story": {"author": author,"title": title, "url": url} },
+      data: {token: user.loginToken, story: {"author": author,"title": title, "url": url} },
     });
 
     //create story instance from the API response
-    const story = new Story(response.data.story);
+    const story = new Story(res.data.story);
 
     //add new story to the array of stories in the class StoryList - unshift add to beginning of array
     this.stories.unshift(story);
@@ -93,6 +93,20 @@ class StoryList {
     user.ownStories.unshift(story);
 
     return story;
+  }
+
+  async removeStory(storyID, user){
+    //remove on API
+    const res = await axios.post({
+      url: `${BASE_URL}/stories/${storyID}`,
+      method: "DELETE",
+      data: {token: user.loginToken},
+    });
+
+    //remove in all lists
+    this.stories = this.stories.filter(s => s.storyId !== storyID);
+    user.ownStories = user.ownStories.filter(s => s.storyId !== storyID);
+    user.favorites = user.favorites.filter(s => s.storyId !== storyID);
   }
 }
 
@@ -135,23 +149,24 @@ class User {
    */
 
   static async signup(username, password, name) {
-    const response = await axios({
-      url: `${BASE_URL}/signup`,
-      method: "POST",
-      data: { user: { username, password, name } },
-    });
 
-    let { user } = response.data
+      const response = await axios({
+        url: `${BASE_URL}/signup`,
+        method: "POST",
+        data: { user: { username, password, name } },
+      });
 
-    return new User(
-      {
-        username: user.username,
-        name: user.name,
-        createdAt: user.createdAt,
-        favorites: user.favorites,
-        ownStories: user.stories
-      },
-      response.data.token
+      let { user } = response.data
+
+      return new User(
+        {
+          username: user.username,
+          name: user.name,
+          createdAt: user.createdAt,
+          favorites: user.favorites,
+          ownStories: user.stories
+        },
+        response.data.token
     );
   }
 
@@ -211,4 +226,36 @@ class User {
       return null;
     }
   }
+
+  /** Add a story to user favorites:
+   * - add to current user
+   * - update the user account on the API
+   */
+
+  async addFav(story) {
+    //favorite list updated
+    this.favorites.push(story);
+    //API favorites updated
+    await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: "POST",
+      data: {token: this.loginToken},
+    });
+  }
+
+  /** Remove a story from user favorites:
+   * - remove from current user
+   * - update the user account on the API
+   */
+
+  async removeFav(story) {
+    
+    this.favorites = this.favorites.filter(s => s.storyId !== story.storyId);
+    await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: "DELETE",
+      data: {token: this.loginToken},
+    });
+  }
 }
+
