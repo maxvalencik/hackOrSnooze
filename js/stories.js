@@ -184,7 +184,7 @@ async function deleteStory(evt) {
   
   await storyList.removeStory(clickedStory, currentUser);
   // re-create story list
-  await putUserStoriesOnPage(); //id on user page
+  await listMyStories(); //id on user page
   $trashCan.closest("li").remove();//if on story list page just remove the li
 }
 
