@@ -97,7 +97,7 @@ class StoryList {
 
   async removeStory(storyID, user){
     //remove on API
-    const res = await axios.post({
+    const res = await axios({
       url: `${BASE_URL}/stories/${storyID}`,
       method: "DELETE",
       data: {token: user.loginToken},

@@ -97,6 +97,7 @@ async function submitStory(evt){
   // Create the markup for the new story and prepend to the html
   $allStoriesList.prepend(generateStoryMarkup(newStory));
   $submitForm.hide();
+  $allStoriesList.show();
 }
 
 $submitButton.on("click", submitStory);
@@ -117,7 +118,6 @@ async function makeRemoveFavorite(evt) {
     $star.removeClass("fav").addClass("notFav");
     $star.html("&star;");
     await currentUser.removeFav(story);
-    console.log(currentUser.favorites);
     
     //update favorite stories html list
     listFavoriteStories();
@@ -126,7 +126,6 @@ async function makeRemoveFavorite(evt) {
     $star.removeClass("notFav").addClass("fav");
     $star.html("&starf;");
     await currentUser.addFav(story);
-    console.log(currentUser.favorites);
   }
 }
 
@@ -185,7 +184,8 @@ async function deleteStory(evt) {
   
   await storyList.removeStory(clickedStory, currentUser);
   // re-create story list
-  await putUserStoriesOnPage();
+  await putUserStoriesOnPage(); //id on user page
+  $trashCan.closest("li").remove();//if on story list page just remove the li
 }
 
 $myStories.on("click", ".trash-can", deleteStory);
